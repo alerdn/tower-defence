@@ -11,9 +11,9 @@ public class ObjectPlacer : MonoBehaviour
         _camera = Camera.main;
     }
 
-    public void PlaceObject(GameObject obj)
+    public bool TryPlaceObject(GameObject obj, Vector2 mousePositionValue)
     {
-        Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = _camera.ScreenPointToRay(mousePositionValue);
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             if (hit.collider.TryGetComponent(out MapObject mapObject))
@@ -21,9 +21,11 @@ public class ObjectPlacer : MonoBehaviour
                 if (mapObject.IsStackable)
                 {
                     mapObject.Stack(obj);
+                    return true;
                 }
             }
         }
 
+        return false;
     }
 }

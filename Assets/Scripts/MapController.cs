@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class MapController : MonoBehaviour
 {
-    [SerializeField] private CinemachineVirtualCamera _virtualCamera;
     [SerializeField] private NavMeshSurface _navMeshSurface;
     [SerializeField] private List<MapObject> _mapObjects;
 
@@ -36,10 +35,9 @@ public class MapController : MonoBehaviour
         int middleY = mapHeight / 2;
 
         Transform middleObject = mapMatrix[middleX, middleY].transform;
-        _virtualCamera.Follow = middleObject;
-        _virtualCamera.LookAt = middleObject;
-
-        _virtualCamera.m_Lens.FieldOfView = Mathf.Clamp(mapWidth * 2, 30, 60);
+        float initialFov = Mathf.Clamp(mapWidth * 2, 30, 60);
+        
+        PlayerController.Instance.Init(middleObject.position, initialFov);
 
         _navMeshSurface.BuildNavMesh();
     }

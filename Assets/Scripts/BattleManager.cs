@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [Serializable]
 public record WaveConfig
@@ -25,6 +26,7 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private List<Sprite> _mapsList;
 
     [Header("Components")]
+    [SerializeField] private InputReader _inputReader;
     [SerializeField] private ObjectPlacer _placer;
     [SerializeField] private MapController _mapController;
 
@@ -48,19 +50,20 @@ public class BattleManager : MonoBehaviour
     {
         _mapController.Generate(_mapsList.GetRandom());
         StartCoroutine(SpawnEnemy());
+
+        _inputReader.PlaceObjectEvent += TryPlaceObject;
     }
 
-    private void Update()
+    private void OnDestroy()
     {
-        if (Input.GetMouseButtonDown(0) && _coins >= _gunCost)
-        {
-            _placer.PlaceObject(_gunPrefab);
-            _coins -= _gunCost;
-        }
+        _inputReader.PlaceObjectEvent -= TryPlaceObject;
+    }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+    private void TryPlaceObject()
+    {
+        if (_coins >= _gunCost && _placer.TryPlaceObject(_gunPrefab, _inputReader.MousePositionValue))
         {
-            _coins += 10;
+            _coins -= _gunCost;
         }
     }
 
