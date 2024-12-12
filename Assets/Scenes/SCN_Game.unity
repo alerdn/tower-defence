@@ -718,7 +718,7 @@ MonoBehaviour:
   _inputReader: {fileID: 11400000, guid: c74a27824affcfa42a26c510cedef552, type: 2}
   _camera: {fileID: 337354899}
   _moveSpeed: 10
-  _rotateSpeed: 5
+  _rotateSpeed: 3
   _acceleration: 120
   _deceleration: 60
 --- !u!4 &1289060090
@@ -815,6 +815,8 @@ MonoBehaviour:
   - {fileID: 8717180737623282734, guid: c58c15d85fb876746958a359018e8d9a, type: 3}
   - {fileID: 8717180737623282734, guid: 0db9b870cd40c3743a96d5794a55c4b1, type: 3}
   - {fileID: 8717180737623282734, guid: 04bf1bfd31ac7fb49ac956415e983b30, type: 3}
+  _spawnScaleDuration: 0.05
+  _spawnScaleInterval: 0.0001
 --- !u!114 &1743210708
 MonoBehaviour:
   m_ObjectHideFlags: 0

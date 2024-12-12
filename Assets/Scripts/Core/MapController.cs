@@ -1,17 +1,23 @@
 using System.Collections.Generic;
 using Unity.AI.Navigation;
-using Cinemachine;
 using UnityEngine;
+using DG.Tweening;
+using System.Collections;
 
 public class MapController : MonoBehaviour
 {
     [SerializeField] private NavMeshSurface _navMeshSurface;
     [SerializeField] private List<MapObject> _mapObjects;
 
-    public void Generate(Sprite map)
+    [Header("Animation")]
+    [SerializeField] private float _spawnScaleDuration = .1f;
+    [SerializeField] private float _spawnScaleInterval = .05f;
+
+    public IEnumerator Generate(Sprite map)
     {
         Color[] pixels = map.texture.GetPixels();
         MapObject[,] mapMatrix = new MapObject[map.texture.width, map.texture.height];
+        InitPlayer(map);
 
         for (int i = 0; i < pixels.Length; i++)
         {
@@ -26,19 +32,25 @@ public class MapController : MonoBehaviour
             MapObject objInstance = Instantiate(obj, transform);
             objInstance.transform.position = new Vector3(x, 0, y);
             mapMatrix[x, y] = objInstance;
+
+            objInstance.transform.DOScale(1f, _spawnScaleDuration).From(0f);
+            yield return new WaitForSeconds(_spawnScaleInterval);
         }
 
-        int mapWidth = mapMatrix.GetLength(0);
-        int mapHeight = mapMatrix.GetLength(1);
+        _navMeshSurface.BuildNavMesh();
+    }
+
+    private void InitPlayer(Sprite map)
+    {
+        int mapWidth = map.texture.width;
+        int mapHeight = map.texture.height;
 
         int middleX = mapWidth / 2;
         int middleY = mapHeight / 2;
 
-        Transform middleObject = mapMatrix[middleX, middleY].transform;
+        Vector3 middlePosition = new Vector3(middleX, 0f, middleY);
         float initialFov = Mathf.Clamp(mapWidth * 2, 30, 60);
-        
-        PlayerController.Instance.Init(middleObject.position, initialFov);
 
-        _navMeshSurface.BuildNavMesh();
+        PlayerController.Instance.Init(middlePosition, initialFov);
     }
 }

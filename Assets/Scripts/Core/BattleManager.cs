@@ -48,15 +48,21 @@ public class BattleManager : MonoBehaviour
 
     private void Start()
     {
-        _mapController.Generate(_mapsList.GetRandom());
-        StartCoroutine(SpawnEnemy());
-
+        _inputReader.SetControllerMode(ControllerMode.Battle);
         _inputReader.PlaceObjectEvent += TryPlaceObject;
+
+        StartCoroutine(Init());
     }
 
     private void OnDestroy()
     {
         _inputReader.PlaceObjectEvent -= TryPlaceObject;
+    }
+
+    private IEnumerator Init()
+    {
+        yield return _mapController.Generate(_mapsList.GetRandom());
+        yield return SpawnEnemy();
     }
 
     private void TryPlaceObject()
