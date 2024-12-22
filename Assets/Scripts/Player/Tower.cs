@@ -29,7 +29,7 @@ public class Tower : MonoBehaviour
             {
                 if (collider.TryGetComponent(out EnemyController enemy))
                 {
-                    Projectile projectile = Instantiate(_projectilePrefab, transform.position, Quaternion.identity);
+                    Projectile projectile = Instantiate(_projectilePrefab, transform.position, Quaternion.identity, transform);
                     projectile.Init(enemy, _damage);
                     break;
                 }

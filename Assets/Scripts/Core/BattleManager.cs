@@ -3,22 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
-
-[Serializable]
-public record WaveConfig
-{
-    [Serializable]
-    public record EnemyConfig
-    {
-        public EnemyController EnemyPrefab;
-        public int Amount;
-    }
-
-    [NonReorderable]
-    public List<EnemyConfig> Enemies;
-    public float Duration;
-}
 
 public class BattleManager : MonoBehaviour
 {
@@ -32,19 +16,16 @@ public class BattleManager : MonoBehaviour
 
     [Header("Enemy")]
     [NonReorderable]
-    [SerializeField] private List<WaveConfig> _waves;
+    [SerializeField] private List<WaveData> _waves;
+    [SerializeField] private int _coinsOnKill;
 
     [Header("Gun")]
     [SerializeField] private GameObject _gunPrefab;
     [SerializeField] private int _gunCost;
 
     [Header("Debug")]
-    [SerializeField] private int _health;
     [SerializeField] private int _coins;
-    [SerializeField] private int _enemiesSpawned;
     [SerializeField] private int _wave;
-
-    private List<EnemyController> _enemies = new List<EnemyController>();
 
     private void Start()
     {
@@ -76,40 +57,30 @@ public class BattleManager : MonoBehaviour
     private IEnumerator SpawnEnemy()
     {
         _wave = 0;
-        foreach (WaveConfig config in _waves)
+        foreach (WaveData config in _waves)
         {
             _wave++;
+            yield return new WaitForSeconds(config.DelayToStart);
 
-            int enemiesAmount = config.Enemies.Sum(enemyConfig => enemyConfig.Amount);
-            float spawnRate = enemiesAmount / config.Duration;
-            int enemyToSpawnCount = enemiesAmount;
-
-            while (enemyToSpawnCount > 0)
+            foreach (var enemyConfig in config.Enemies)
             {
-                yield return new WaitForSeconds(1f / spawnRate);
-
-                var enemyConfig = config.Enemies.Find(enemyConfig => enemyConfig.Amount > 0);
-                EnemyController enemy = Instantiate(enemyConfig.EnemyPrefab, GameObject.FindWithTag("Start").transform.position, Quaternion.identity);
-                enemyConfig.Amount--;
-
-                enemy.OnDeath += (EnemyController enemyController, bool isKilled) =>
+                for (int i = 0; i < enemyConfig.Amount; i++)
                 {
-                    if (isKilled)
+                    EnemyController enemy = Instantiate(enemyConfig.EnemyPrefab, GameObject.FindWithTag("Start").transform.position + Vector3.up / 2, Quaternion.identity, transform);
+                    enemy.OnDeath += (EnemyController enemyController, bool isKilled) =>
                     {
-                        _coins += 5;
-                    }
-                    else
-                    {
-                        _health -= 5;
-                    }
+                        if (isKilled)
+                        {
+                            _coins += _coinsOnKill;
+                        }
+                        else
+                        {
+                            PlayerController.Instance.TakeDamage(1);
+                        }
+                    };
 
-                    _enemies.Remove(enemyController);
-                };
-
-                _enemies.Add(enemy);
-                enemyToSpawnCount--;
-
-                _enemiesSpawned++;
+                    yield return new WaitForSeconds(enemyConfig.SpawnInterval);
+                }
             }
         }
     }

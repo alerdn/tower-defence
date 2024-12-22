@@ -4,12 +4,18 @@ using UnityEngine;
 
 public class PlayerController : Singleton<PlayerController>
 {
+    public event Action<int, int> OnHealthUpdated;
+
     [SerializeField] private InputReader _inputReader;
     [SerializeField] private CinemachineVirtualCamera _camera;
     [SerializeField] private float _moveSpeed;
     [SerializeField] private float _rotateSpeed;
     [SerializeField] private float _acceleration;
     [SerializeField] private float _deceleration;
+    [SerializeField] private int _maxHealth = 100;
+
+    [Header("Debug")]
+    [SerializeField] private int _health;
 
     private Rigidbody _rigidbody;
     private Vector3 _velocity;
@@ -18,6 +24,11 @@ public class PlayerController : Singleton<PlayerController>
     {
         base.Awake();
         _rigidbody = GetComponent<Rigidbody>();
+    }
+
+    private void Start()
+    {
+        _health = _maxHealth;
     }
 
     private void Update()
@@ -62,5 +73,17 @@ public class PlayerController : Singleton<PlayerController>
     {
         transform.position = new Vector3(middleObjectPosition.x, transform.position.y, middleObjectPosition.z);
         _camera.m_Lens.FieldOfView = initialFov;
+    }
+
+    public void TakeDamage(int damage)
+    {
+        _health = Mathf.Max(_health - damage, 0);
+
+        if (_health == 0)
+        {
+            Debug.Log("Game Over");
+        }
+
+        OnHealthUpdated?.Invoke(_health, _maxHealth);
     }
 }

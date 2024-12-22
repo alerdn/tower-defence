@@ -178,7 +178,7 @@ GameObject:
   - component: {fileID: 5116916783729773450}
   - component: {fileID: -2608096032730828996}
   m_Layer: 0
-  m_Name: PFB_Gun
+  m_Name: PFB_Tower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -212,9 +212,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35862b60970a3bd41a76f800ce4911a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _range: 5
-  _damage: 2
-  _fireRate: 5
+  _range: 4
+  _damage: 3
+  _fireRate: 3
   _projectilePrefab: {fileID: 8060916562907449875, guid: fab7f14eb86270b4dbeab2f09d1ba89b,
     type: 3}
   _target: {fileID: 0}

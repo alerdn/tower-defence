@@ -12,11 +12,11 @@ public class MapController : MonoBehaviour
     [Header("Animation")]
     [SerializeField] private float _spawnScaleDuration = .1f;
     [SerializeField] private float _spawnScaleInterval = .05f;
+    [SerializeField] private bool _showGenerateAnimation;
 
     public IEnumerator Generate(Sprite map)
     {
         Color[] pixels = map.texture.GetPixels();
-        MapObject[,] mapMatrix = new MapObject[map.texture.width, map.texture.height];
         InitPlayer(map);
 
         for (int i = 0; i < pixels.Length; i++)
@@ -31,12 +31,12 @@ public class MapController : MonoBehaviour
 
             MapObject objInstance = Instantiate(obj, transform);
             objInstance.transform.position = new Vector3(x, 0, y);
-            mapMatrix[x, y] = objInstance;
 
             objInstance.transform.DOScale(1f, _spawnScaleDuration).From(0f);
-            yield return new WaitForSeconds(_spawnScaleInterval);
+            if (_showGenerateAnimation) yield return new WaitForSeconds(_spawnScaleInterval);
         }
 
+        yield return new WaitForSeconds(.5f);
         _navMeshSurface.BuildNavMesh();
     }
 

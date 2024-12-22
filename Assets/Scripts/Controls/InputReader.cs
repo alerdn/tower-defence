@@ -10,7 +10,7 @@ public enum ControllerMode
 }
 
 [CreateAssetMenu(fileName = "InputReader", menuName = "InputReader")]
-public class InputReader : ScriptableObject, IPlayerActions
+public class InputReader : ScriptableObject, IPlayerActions, IUIActions
 {
     public event Action PlaceObjectEvent;
     public event Action TogglePauseEvent;
@@ -27,6 +27,7 @@ public class InputReader : ScriptableObject, IPlayerActions
     {
         _controls ??= new Controls();
         _controls.Player.SetCallbacks(this);
+        _controls.UI.SetCallbacks(this);
     }
 
     public void SetControllerMode(ControllerMode mode)
